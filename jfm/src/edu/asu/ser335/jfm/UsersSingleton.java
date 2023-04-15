@@ -92,8 +92,7 @@ public final class UsersSingleton {
 					users.add(u);
 					mapper.writeValue(new File(CommonConstants.AUTHENTICATION_FILE), users);
 				} catch (IOException e1) {
-					e1.printStackTrace();
-					rval = false;
+					throw e1;
 				}
 			}
 		}
