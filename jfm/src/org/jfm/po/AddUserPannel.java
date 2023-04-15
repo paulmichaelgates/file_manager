@@ -162,6 +162,15 @@ public class AddUserPannel extends JFrame implements ActionListener {
 			return "File system error";
 		}
 
+		/**
+		 * If this is a json parsing or mapping issue let the end
+		 * user know that there was issue with the database. i.e.,
+		 * Mapping or parsing error
+		 */
+		if(throwable instanceof com.fasterxml.jackson.core.JsonParseException){
+			return "Database error";
+		}
+
 		/*
 		 * If we get here, we don't know what the problem is
 		 * so we return a generic error message for now and if

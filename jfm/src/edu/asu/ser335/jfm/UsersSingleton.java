@@ -85,14 +85,28 @@ public final class UsersSingleton {
 
 				// adding the new user to authentication.json
 				ObjectMapper mapper = new ObjectMapper();
+				TypeReference<List<User>> typeReference = new TypeReference<List<User>>() {};
+				InputStream inputStream = null;
 				try {
-						InputStream inputStream = new FileInputStream(new File(CommonConstants.AUTHENTICATION_FILE));
-						TypeReference<List<User>> typeReference = new TypeReference<List<User>>() {};
+					inputStream = new FileInputStream(new File(CommonConstants.AUTHENTICATION_FILE));
+				} catch (IOException e1) {
+					throw e1;
+				}
+
+				/**
+				 * write the value to the file. This will overwrite the existing file.
+				 */
+				try{
 					users = mapper.readValue(inputStream, typeReference);
 					users.add(u);
 					mapper.writeValue(new File(CommonConstants.AUTHENTICATION_FILE), users);
-				} catch (IOException e1) {
-					throw e1;
+				}
+				/**
+				 * This exception is parsed at the calling method level so don't worry about what
+				 * type of exception it is for now.
+				 */
+				catch (Exception e) {
+					throw e;
 				}
 			}
 		}

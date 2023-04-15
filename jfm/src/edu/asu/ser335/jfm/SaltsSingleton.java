@@ -69,14 +69,32 @@ public final class SaltsSingleton {
 		s.setName(userName);
 		s.setSalt(slt);
 		ObjectMapper map = new ObjectMapper();
+
+		/*
+		 * Read in the salts file
+		 */
+		InputStream inputStream;
 		try {
-			InputStream inputStream = new FileInputStream(new File(CommonConstants.SALTS_FILE));
-			TypeReference<List<Salt>> typeReference = new TypeReference<List<Salt>>() {};
+			inputStream = new FileInputStream(new File(CommonConstants.SALTS_FILE));
+			
+		} catch (IOException e1) {
+			throw(e1);
+		}
+
+		/*
+		 * read in the salts file and add the new salt.
+		 */
+		TypeReference<List<Salt>> typeReference = new TypeReference<List<Salt>>() {};
+		try{
 			salts = map.readValue(inputStream, typeReference);
 			salts.add(s);
 			map.writeValue(new File(CommonConstants.SALTS_FILE), salts);
-		} catch (IOException e1) {
-			throw(e1);
+		} catch(JsonParseException e) {
+			throw(e);
+		} catch(JsonMappingException e) {
+			throw(e);
+		} catch(IOException e) {
+			throw(e);
 		}
 
 		long salted_password = SipHasher.hash(salt, password.getBytes());
