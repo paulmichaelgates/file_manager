@@ -76,7 +76,6 @@ public final class SaltsSingleton {
 			salts.add(s);
 			map.writeValue(new File(CommonConstants.SALTS_FILE), salts);
 		} catch (IOException e1) {
-			e1.printStackTrace();
 			throw(e1);
 		}
 
