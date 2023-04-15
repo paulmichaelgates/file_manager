@@ -123,7 +123,50 @@ public class AddUserPannel extends JFrame implements ActionListener {
 				dispose();
 			}
 		} catch (Throwable t) {
-			JOptionPane.showMessageDialog(null, "Some error accessing file!!");	
+			JOptionPane.showMessageDialog(null, parseException(t));	
 		}
+	}
+
+	private static String parseException(Throwable throwable){
+		/**
+		 * First determine when kind of exception we are dealing
+		 * with
+		 */
+		if(throwable instanceof java.io.FileNotFoundException){
+			/*
+			 * Determine if we ran into a permission problem
+			 */
+			if(throwable.getMessage().contains("Permission denied")){
+				return "Permission denied";
+			}
+
+			/*
+			 * Determine if we ran into a file not found problem
+			 */
+			if(throwable.getMessage().contains("No such file or directory")){
+				return "File not found";
+			}
+
+			/*
+			 * If we get here, then we know that there is some kind of file error
+			 * we are just not sure exactly what it is
+			 */
+			return "Unknown file error";
+
+		}
+
+		/*
+		 * Determine if we ran into a problem with the file system
+		 */
+		if(throwable instanceof java.io.IOException){
+			return "File system error";
+		}
+
+		/*
+		 * If we get here, we don't know what the problem is
+		 * so we return a generic error message for now and if
+		 * something else comes up, we can add more cases
+		 */
+		return "Unknown error";
 	}
 }
