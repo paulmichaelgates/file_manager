@@ -75,6 +75,11 @@ public final class UsersSingleton {
 				UsersSingleton.userPasswordMapping.put(userName, saltedPassword);
 				System.out.println("userPasswordMapping: " + UsersSingleton.userPasswordMapping);
 
+				/*
+				 * TODO if an error occurs after this, then the username will already be taken even though
+				 * technically we can't garauntee file IO will succeed every time. We should probably
+				 * have a rollback mechanism in place to handle this.	
+				 */
 				UsersSingleton.userRoleMapping.put(userName, role);
 				System.out.println("userRoleMapping: " + UsersSingleton.userRoleMapping);
 

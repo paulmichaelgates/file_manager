@@ -58,7 +58,9 @@ public class CopyAction implements Action {
     }
     
     final JFMFile destinationDir=Options.getInactivePanel().getCurrentWorkingDirectory();
-
+    if (destinationDir == null) {
+      return;
+    }
 
     CopyConfirmDialog d=new CopyConfirmDialog(Options.getMainFrame(),"Copy",true);
     d.setCopyFrom(filesToBeCopied[0].getPath());
@@ -81,12 +83,11 @@ public class CopyAction implements Action {
 
     progress.startAction(new ActionExecuter(){
       public void start(){
-        try {
-          copyFiles(filesToBeCopied,destinationDir);
-        }
-        catch (ActionCancelledException ex) {
-        	ex.printStackTrace();
-          this.cancel();
+    
+      if( !copyFiles(filesToBeCopied,destinationDir  ) )
+        {
+        this.cancel();
+        return;
         }
 
         ChangeDirectoryEvent ev=new ChangeDirectoryEvent();
@@ -117,22 +118,42 @@ public class CopyAction implements Action {
     return totalSizes;
   }
 
-  private void copyDir(JFMFile dir,JFMFile dest) throws ActionCancelledException{
+  private boolean copyDir(JFMFile dir,JFMFile dest) {
     JFMFile[] f=dir.listFiles();
-    if(f==null) return;
+    if(f==null) return false;
     //File destFile=new File(toDir.getPath()+(toDir.getPath().endsWith(File.separator)?"":File.separator)+el.getName());
     for(int i=0;i<f.length;i++){    	      
       if(f[i].isDirectory()){
         JFMFile destFile=dest.mkdir(f[i].getName());
-        copyDir(f[i],destFile);
+        if( !copyDir(f[i],destFile) )
+          {
+          return false;
+          }
       }else{
     	JFMFile destFile=dest.createFile(f[i].getName());
-        copyFile(f[i],destFile);
+        if( !copyFile(f[i],destFile) )
+          {
+          return false;
+          }
       }
     }
+
+    // made it here? okay return true`
+    return true;
   }
 
-  private void copyFile(JFMFile fin,JFMFile fout) throws ActionCancelledException {
+  /**
+   * SER335 LAB5 (2) - copyFile
+   * 
+   * Make the code more secure by doing proper input validation.
+   * 1. Check if the file exists before copying it.
+   * 2. Check if the file is a directory before copying it.
+   * 3. check for null printStackTrace
+   * @param fin
+   * @param fout
+   * @throws ActionCancelledException
+   */
+  private boolean copyFile(JFMFile fin,JFMFile fout) {
     if(fout.exists() && !overwriteAll && !skipAll){
 
       java.text.SimpleDateFormat format=new java.text.SimpleDateFormat("EEE, MMM d, yyyy 'at' hh:mm:ss");
@@ -155,12 +176,12 @@ public class CopyAction implements Action {
           totalBytesWritten+=fin.length();          
           int t_percent=totalFilesSizes!=0?(int)((totalBytesWritten*100)/totalFilesSizes):0;
           progress.setTotalProgresssValue(t_percent);
-          return;
+          return true;
         case 3:
           skipAll=true;
           break;
           case 4:
-            throw new ActionCancelledException();
+            return false;
       }
     }
 
@@ -169,7 +190,7 @@ public class CopyAction implements Action {
           int t_percent=(int)((totalBytesWritten*100)/totalFilesSizes);
           progress.setTotalProgresssValue(t_percent);
           progress.setFileProgresssValue(100);
-          return;
+          return false;
     }
       java.io.InputStream in=null;
       java.io.OutputStream out=null;
@@ -202,7 +223,7 @@ public class CopyAction implements Action {
       }catch(ActionCancelledException ex){
     	  ex.printStackTrace();
           curentlyCopiedFile.delete();
-          throw ex;
+          return false;
       }catch(Exception ex){
         JOptionPane.showMessageDialog(progress,"Error while writing "+fout.getPath(),"Error",JOptionPane.ERROR_MESSAGE);
         curentlyCopiedFile.delete();
@@ -216,22 +237,52 @@ public class CopyAction implements Action {
         }
         catch (Exception ignored) {}
       }
+
+      return true;
   }
 
-  private void copyFiles(JFMFile[] filesToBeCopied,JFMFile destinationDir) throws ActionCancelledException{
-    totalFilesSizes=getFilesSize(filesToBeCopied);
-    if(filesToBeCopied.length==0) progress.dispose();
-    for(int i=0;i<filesToBeCopied.length;i++){
-      JFMFile el=(JFMFile)filesToBeCopied[i];      
-      if(el.isDirectory()){
-    	JFMFile destFile=destinationDir.mkdir(el.getName());
-        //if(!destFile.exists()) destFile.mkdirs();
-        copyDir(el,destFile);
-      }else{
-    	JFMFile destFile=destinationDir.createFile(el.getName());
-        copyFile(el,destFile);
-      }
-
+  /**
+   * SER335 LAB5 (1)  -  Copy Files
+   * 
+   * Added defenesive programming to prevent null pointer exception
+   * and other exceptions such as Checking that each file to be copied
+   * exists before attempting to copy it. Skipping files that don't exist
+   * instead of throwing an exception.
+   * 
+   * Removed exception by using boolean return type which specifies if
+   * the copy was successful or not.
+   * @param filesToBeCopied
+   * @param destinationDir
+   */
+  private boolean copyFiles(JFMFile[] filesToBeCopied,JFMFile destinationDir){
+      // Ensure that the destination directory exists and is a directory
+      if (!destinationDir.isDirectory()) {
+        return false;
     }
+    if (filesToBeCopied.length == 0) {
+        progress.dispose();
+        return false;
+    }
+    // Loop through each file to be copied
+    for (JFMFile file : filesToBeCopied) {
+        if (!file.exists()) {
+            // Skip files that don't exist
+            continue;
+        }
+        if (file.isDirectory()) {
+            // Create the corresponding directory in the destination directory
+            JFMFile destDir = destinationDir.mkdir(file.getName());
+            // Recursively copy the contents of the directory
+            return copyDir(file, destDir);
+        } else {
+            // Copy the file to the destination directory
+            JFMFile destFile = destinationDir.createFile(file.getName());
+            return copyFile(file, destFile);
+        }
+    }
+    /**
+     * no files copied? return false
+     */
+    return false;
   }
 }
