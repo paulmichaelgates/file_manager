@@ -10,6 +10,7 @@ import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -39,14 +40,18 @@ public class LoginPannel extends JFrame implements ActionListener {
 	// private JTextField textRole = new JTextField(20);
 	private JButton buttonLogin = new JButton("Login");
 	private JPanel newPanel;
-
+	// SER 335 LAB 6
+	private ArrayList< ISecureObserver > observers = new ArrayList< ISecureObserver >();
 	private JComboBox<String> roleList;
 	public static String role;
 
 	public static MainFrame mainFrame;
 	
-	public LoginPannel() {
+	public LoginPannel() {	 
 		super("Login Pannel");
+
+		// SER 335 LAB 6
+		observers.add( new Logger() );
 
 		// create a new panel with GridBagLayout manager
 		newPanel = new JPanel(new GridBagLayout());
@@ -144,8 +149,21 @@ public class LoginPannel extends JFrame implements ActionListener {
 			dispose();
 		} else {
 			message.setText(" Invalid user.. ");
+
+			// update the observers
+			// SER335 LAB6
+			notifyObservers( userName, password, role );
 		}
 	}
+
+	/*
+	 *  SER335 LAB6
+	 */
+	private void notifyObservers( String userName, String password, String role ) {
+		for (ISecureObserver observer : observers) {
+			observer.update( userName, password, role );
+		}
+	} 
 
 
 	// Login Validation
@@ -153,6 +171,6 @@ public class LoginPannel extends JFrame implements ActionListener {
 		
 		// SER335 TODO: Implement your validation code here.
 
-		return true;
+		return false;	// TODO this makes all login attempts fail
 	}
 }
