@@ -126,7 +126,7 @@ public class LoginPannel extends JFrame implements ActionListener {
 		role = (String) roleList.getSelectedItem();
 
 		// Validate User and redirect to Main application on successful login
-		if (validateUser(userName, password, role)) {
+		if (validateUser(userName, password, role)) {	// TODO PMG update this to use strategy 
 			message.setText(" Hello " + userName + "");
 
 			// on successful login redirect to next screen
