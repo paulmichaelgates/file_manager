@@ -9,7 +9,7 @@ import java.io.InputStreamReader;
  * based on the properties file
  */
 public class ValidateUserFactory {
-    private static final String file_name = "jfm.properties";
+    private static final String file_name = "resources/jfm335.properties";
 
     public static IValidateUserStrategy get_validation_strategy()
     {

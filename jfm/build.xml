@@ -67,6 +67,7 @@
 	 	    <copy todir="${dist}/resources">
 	 	  	  	 <fileset dir="${basedir}/resources">
 	 	  	  	  		  	    <include name="*.json" />
+								<include name="*.properties" />
 	 	  	  	 </fileset>
 	 	  	</copy>
 
