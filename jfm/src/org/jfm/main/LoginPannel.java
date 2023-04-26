@@ -22,6 +22,8 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import edu.asu.ser335.jfm.RolesSingleton;
+import edu.asu.ser335.jfm.IValidateUserStrategy;
+import edu.asu.ser335.jfm.ValidateUserFactory;
 
 /**
  * @author Nikhil Hiremath
@@ -37,6 +39,8 @@ public class LoginPannel extends JFrame implements ActionListener {
 	private JLabel message;
 	private JTextField textUsername = new JTextField(20);
 	private JPasswordField fieldPassword = new JPasswordField(20);
+	private IValidateUserStrategy validator;
+
 	// private JTextField textRole = new JTextField(20);
 	private JButton buttonLogin = new JButton("Login");
 	private JPanel newPanel;
@@ -44,11 +48,12 @@ public class LoginPannel extends JFrame implements ActionListener {
 	private ArrayList< ISecureObserver > observers = new ArrayList< ISecureObserver >();
 	private JComboBox<String> roleList;
 	public static String role;
-
 	public static MainFrame mainFrame;
 	
 	public LoginPannel() {	 
 		super("Login Pannel");
+
+		validator = ValidateUserFactory.get_validation_strategy();
 
 		// SER 335 LAB 6
 		observers.add( new Logger() );
@@ -169,8 +174,6 @@ public class LoginPannel extends JFrame implements ActionListener {
 	// Login Validation
 	public boolean validateUser(String uName, String pwd, String role) {
 		
-		// SER335 TODO: Implement your validation code here.
-
-		return false;	// TODO this makes all login attempts fail
+		return validator.validateUser(uName, pwd);
 	}
 }

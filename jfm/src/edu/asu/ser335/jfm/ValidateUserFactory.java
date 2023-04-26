@@ -18,15 +18,15 @@ public class ValidateUserFactory {
      */
     String type_str = read_properties_file();
 
-    if( type_str.equals("NullValidateUser") )
+    if( type_str.contains("NullValidateUser") )
         {
         return new NullValidateUser();
         }
-    else if( type_str.equals("StrictValidateUser" ) )
+    else if( type_str.contains("StrictValidateUser" ) )
         {
         return new StrictValidateUser();
         }
-    else if ( type_str.equals("ModerateValidateUser" ) )
+    else if ( type_str.contains("ModerateValidateUser" ) )
         {
         return new ModerateValidateUser();
         }
@@ -36,9 +36,10 @@ public class ValidateUserFactory {
         }
 
     /*
-     * If we get here, something went wrong
+     * If we get here, something went wrong but
+     * we still want to fail safely
      */
-    return null;
+    return new StrictValidateUser();
     }
 
     /*

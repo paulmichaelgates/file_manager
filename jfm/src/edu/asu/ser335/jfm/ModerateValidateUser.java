@@ -7,7 +7,8 @@ public class ModerateValidateUser implements IValidateUserStrategy{
      * requires at least 1 letter and 1 numeric digit
      */
     @Override
-    public boolean validateUser(String userName, String password) {
+    public boolean validateUser(String userName, String password) 
+    {
         /*
          * validate the user
          */
@@ -36,6 +37,5 @@ public class ModerateValidateUser implements IValidateUserStrategy{
             }
 
         return hasLetter && hasNumber;
-
     }
 }
