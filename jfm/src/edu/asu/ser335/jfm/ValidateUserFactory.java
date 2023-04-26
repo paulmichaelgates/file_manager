@@ -2,7 +2,6 @@ package edu.asu.ser335.jfm;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 
 /*
@@ -10,9 +9,9 @@ import java.io.InputStreamReader;
  * based on the properties file
  */
 public class ValidateUserFactory {
-    private final String file_name = "jfm.properties";
+    private static final String file_name = "jfm.properties";
 
-    public IValidateUserStrategy get_validation_strategy()
+    public static IValidateUserStrategy get_validation_strategy()
     {
     /*
      * Read in the property file and return the appropriate strategy
@@ -45,7 +44,7 @@ public class ValidateUserFactory {
     /*
      * Read in the property file and return the appropriate strategy
      */
-    private String read_properties_file()
+    private static String read_properties_file()
     {
     /*
      * Local variables

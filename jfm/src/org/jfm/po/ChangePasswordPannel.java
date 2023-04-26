@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.Base64.Encoder;
 import java.util.List;
+import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -32,10 +33,14 @@ import org.jfm.main.CommonConstants;
 import org.jfm.main.LoginPannel;
 import org.jfm.main.Salt;
 import org.jfm.main.User;
+import org.jfm.main.ISecureObserver;
+import org.jfm.main.Logger;
+import edu.asu.ser335.jfm.ValidateUserFactory;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import edu.asu.ser335.jfm.IValidateUserStrategy;
 import edu.asu.ser335.jfm.RolesSingleton;
 import io.whitfin.siphash.SipHasher;
 
@@ -57,7 +62,16 @@ public class ChangePasswordPannel extends JFrame implements ActionListener {
 	private List<User> users;
 	private List<Salt> salts;
 
+	// SER 335 LAB 6
+	private IValidateUserStrategy validator = null;
+	private ArrayList< ISecureObserver > observers = new ArrayList< ISecureObserver >();
 	public ChangePasswordPannel() {
+		// add observers
+		observers.add( new Logger() );
+
+		// add validator based on properties file
+		validator = ValidateUserFactory.get_validation_strategy();
+
 		// create a new panel with GridBagLayout manager
 		newPanel = new JPanel(new GridBagLayout());
 
@@ -123,16 +137,37 @@ public class ChangePasswordPannel extends JFrame implements ActionListener {
 		setLocationRelativeTo(null);
 	}
 	
+	/*
+	 *  SER335 LAB6
+	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		String userName = textUsername.getText();
 		// String userName = (String) roleList.getSelectedItem();
 		String password = String.valueOf(fieldPassword.getPassword());
 		String role = (String) roleList.getSelectedItem();
-		
-		// TODO: for you to complete!
-		JOptionPane.showMessageDialog(null, "NOT IMPLEMENETD YET!!");
 
+		// update the observers
+		notifyObservers( userName, password, role );
+
+		// validate the user
+		if( validator.validateUser( userName, password ) )
+			{
+			JOptionPane.showMessageDialog(this, "Password changed successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);		
+			}
+		else
+			{
+			JOptionPane.showMessageDialog(this, "Password not acceptable!", "Error", JOptionPane.ERROR_MESSAGE);
+			}
 	}
+
+	/*
+	 *  SER335 LAB6
+	 */
+	private void notifyObservers( String userName, String password, String role ) {
+		for (ISecureObserver observer : observers) {
+			observer.update( userName, password, role );
+		}
+	} 
 
 }

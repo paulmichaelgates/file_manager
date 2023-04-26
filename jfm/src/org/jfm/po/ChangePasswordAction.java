@@ -8,8 +8,10 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeListener;
-
+import java.util.ArrayList;
+import org.jfm.main.ISecureObserver;
 import javax.swing.JFrame;
+import org.jfm.main.Logger;
 
 /**
  * @author Nikhil Hiremath
@@ -25,7 +27,7 @@ public class ChangePasswordAction extends JFrame implements ActionListener {
 		// should return something else in here.
 		return null;
 	}
-
+	
 	public void putValue(String key, Object value) {
 	}
 
